@@ -22,8 +22,8 @@ function submitName(infoSelector) {
 
 function initializeMap() {
   var mapOptions = {
-    center: new google.maps.LatLng(-34.397, 150.644),
-    zoom: 8,
+    center: new google.maps.LatLng(31.548614, -97.149073),
+    zoom: 18,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
   var map = new google.maps.Map(document.getElementById("map"), mapOptions);
