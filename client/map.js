@@ -1,6 +1,24 @@
 Meteor.startup(function () {
   initializeMap();
+
+  // Submit the name when the submit button is pressed or the
+  // user hits enter inside the text box on the info form
+  $(document.body).on('click', '.info .btn', function () {
+    submitName($(this).parent());
+  });
+  $(document.body).on('keydown', '.info .name', function (event) {
+    if (event.keyCode === 13) {
+      submitName($(this).parent());
+    }
+  });
 });
+
+function submitName(infoSelector) {
+  var name = $.trim(infoSelector.find('.name').val());
+  if (name.length > 0) {
+    alert('submit name ' + name);
+  }
+}
 
 function initializeMap() {
   var mapOptions = {
@@ -14,7 +32,6 @@ function initializeMap() {
   // position where the long press occurred
   var longpressTimeout;
   google.maps.event.addListener(map, 'mousedown', function (event) {
-    Meteor.clearTimeout(longpressTimeout);
     longpressTimeout = Meteor.setTimeout(function () {
       // Create a marker on the map
       var marker = new google.maps.Marker({
