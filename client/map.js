@@ -14,13 +14,22 @@ function initializeMap() {
   // position where the long press occurred
   var longpressTimeout;
   google.maps.event.addListener(map, 'mousedown', function (event) {
+    Meteor.clearTimeout(longpressTimeout);
     longpressTimeout = Meteor.setTimeout(function () {
+      // Create a marker on the map
       var marker = new google.maps.Marker({
         position: event.latLng,
         map: map,
         animation: google.maps.Animation.DROP,
         title: 'Chris'
       });
+
+      // Display an info window above the marker
+      var info = new google.maps.InfoWindow({
+        content: Template.infoWindow()
+      });
+      info.open(map, marker);
+
     }, 1000);  // a long press occurs after 1 second
   });
 
