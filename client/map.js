@@ -11,6 +11,13 @@ Meteor.startup(function () {
       submitName($(this).parent());
     }
   });
+
+  // Toggle the submit button's enabled-ness as the value in the
+  // text box changes
+  $(document.body).on('input', '.info .name', function () {
+    var enabled = $(this).val().length > 0;
+    $(this).closest('.info').find('.btn').toggleClass('disabled', ! enabled);
+  });
 });
 
 function submitName(infoSelector) {
