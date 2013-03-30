@@ -19,20 +19,37 @@ Meteor.startup(function () {
     $(this).closest('.info').find('.btn').toggleClass('disabled', ! enabled);
   });
 
-  // Initialize the map and listen for new markers
+  // Initialize the map and add any initial markers to it
   var map = initializeMap();
-  Deps.autorun(function () {
-    Locations.find().forEach(function (location) {
-      var position = new google.maps.LatLng(location.lat, location.lng);
-      var marker = new google.maps.Marker({
-        position: position,
-        map: map,
-        title: location.name,
-        animation: google.maps.Animation.DROP
-      });
-    });
+  Locations.find().forEach(function (location) {
+    var position = new google.maps.LatLng(location.lat, location.lng);
+    addMarkerToMap(map, position);
   });
+
+  //Deps.autorun(function () {
+    Locations.find().observeChanges({
+      added: function (id, location) {
+        var position = new google.maps.LatLng(location.lat, location.lng);
+        addMarkerToMap(map, position);
+      },
+
+      removed: function (id) {
+        // TODO
+      }
+
+    });
+  //});
 });
+
+function addMarkerToMap(map, position) {
+  var marker = new google.maps.Marker({
+    position: position,
+    map: map,
+    title: location.name,
+    animation: google.maps.Animation.DROP
+  });
+  return marker;
+}
 
 function submitName(infoSelector) {
   var name = $.trim(infoSelector.find('.name').val());
@@ -43,6 +60,7 @@ function submitName(infoSelector) {
       lng: position.lng(),
       name: name
     });
+    window.info.close();
   }
 }
 
@@ -72,14 +90,14 @@ function initializeMap() {
       });
 
       // Display an info window above the marker
-      var info = new google.maps.InfoWindow({
+      window.info = new google.maps.InfoWindow({
         content: Template.infoWindow()
       });
-      info.open(map, window.marker);
+      window.info.open(map, window.marker);
 
       // If the window is closed with the close button, remove
       // the marker from the map
-      google.maps.event.addListener(info, 'closeclick', function () {
+      google.maps.event.addListener(window.info, 'closeclick', function () {
         window.marker.setMap(null);
       });
 
