@@ -40,8 +40,13 @@ function initializeMap() {
   var longpressTimeout;
   google.maps.event.addListener(map, 'mousedown', function (event) {
     longpressTimeout = Meteor.setTimeout(function () {
+      // Remove the marker that is currently being editied (if it exists)
+      if (window.marker) {
+        window.marker.setMap(null);
+      }
+
       // Create a marker on the map
-      var marker = new google.maps.Marker({
+      window.marker = new google.maps.Marker({
         position: event.latLng,
         map: map,
         animation: google.maps.Animation.DROP
@@ -51,12 +56,12 @@ function initializeMap() {
       var info = new google.maps.InfoWindow({
         content: Template.infoWindow()
       });
-      info.open(map, marker);
+      info.open(map, window.marker);
 
       // If the window is closed with the close button, remove
       // the marker from the map
       google.maps.event.addListener(info, 'closeclick', function () {
-        marker.setMap(null);
+        window.marker.setMap(null);
       });
 
     }, 500);  // milliseconds for a long press
