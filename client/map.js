@@ -1,6 +1,6 @@
-Meteor.startup(function () {
-  initializeMap();
+Locations = new Meteor.Collection('locations');
 
+Meteor.startup(function () {
   // Submit the name when the submit button is pressed or the
   // user hits enter inside the text box on the info form
   $(document.body).on('click', '.info .btn', function () {
@@ -18,12 +18,31 @@ Meteor.startup(function () {
     var enabled = $(this).val().length > 0;
     $(this).closest('.info').find('.btn').toggleClass('disabled', ! enabled);
   });
+
+  // Initialize the map and listen for new markers
+  var map = initializeMap();
+  Deps.autorun(function () {
+    Locations.find().forEach(function (location) {
+      var position = new google.maps.LatLng(location.lat, location.lng);
+      var marker = new google.maps.Marker({
+        position: position,
+        map: map,
+        title: location.name,
+        animation: google.maps.Animation.DROP
+      });
+    });
+  });
 });
 
 function submitName(infoSelector) {
   var name = $.trim(infoSelector.find('.name').val());
   if (name.length > 0) {
-    alert('submit name ' + name);
+    var position = window.marker.getPosition();
+    Locations.insert({
+      lat: position.lat(),
+      lng: position.lng(),
+      name: name
+    });
   }
 }
 
@@ -74,4 +93,6 @@ function initializeMap() {
   google.maps.event.addListener(map, 'mousemove', function () {
     Meteor.clearTimeout(longpressTimeout);
   });
+
+  return map;
 }
