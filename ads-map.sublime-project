@@ -1,0 +1,10 @@
+{
+	"folders":
+	[
+		{
+			"path": "/chris/dev/projects/meteor/ads-map",
+      "folder_exclude_patterns": [".meteor"],
+      "file_exclude_patterns": ["*.sublime*"]
+		}
+	]
+}
