@@ -30,7 +30,9 @@ Meteor.startup(function () {
     Locations.find().observeChanges({
       added: function (id, location) {
         var position = new google.maps.LatLng(location.lat, location.lng);
-        addMarkerToMap(map, position);
+        if (! window.marker || ! window.marker.getPosition().equals(position)) {
+          addMarkerToMap(map, position);
+        }
       },
 
       removed: function (id) {
