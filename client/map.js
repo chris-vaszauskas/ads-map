@@ -44,8 +44,7 @@ function initializeMap() {
       var marker = new google.maps.Marker({
         position: event.latLng,
         map: map,
-        animation: google.maps.Animation.DROP,
-        title: 'Chris'
+        animation: google.maps.Animation.DROP
       });
 
       // Display an info window above the marker
@@ -54,7 +53,13 @@ function initializeMap() {
       });
       info.open(map, marker);
 
-    }, 1000);  // a long press occurs after 1 second
+      // If the window is closed with the close button, remove
+      // the marker from the map
+      google.maps.event.addListener(info, 'closeclick', function () {
+        marker.setMap(null);
+      });
+
+    }, 500);  // milliseconds for a long press
   });
 
   // If the mouse is released or moved, the long press is cancelled
