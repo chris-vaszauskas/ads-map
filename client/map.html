@@ -10,16 +10,29 @@
 </body>
 
 <template name="sidebar">
-  <div class='sidebar'>
+  <div class="sidebar">
     <h1>Antioch Discipleship School</h1>
     <p>Where are you going?</h1>
+
+    {{> dropMarker}}
   </div>
 </template>
 
-<template name="infoWindow">
-  <div class='info'>
+<template name="dropMarker">
+  <div class="dropMarker"></div>
+</template>
+
+<template name="addPosition">
+  <div class="info">
     <p>What is your name?</p>
-    <input class='name' type='text' placeholder='name'>
-    <button class='btn btn-primary disabled' type='button'>Submit</button>
+    <input class="name" type="text" placeholder="name">
+    <button class="btn btn-primary disabled" type="button">Submit</button>
+  </div>
+</template>
+
+<template name="showPosition">
+  <div>
+    <p>{{name}}</p>
+    <button class="btn btn-danger btn-delete" type="button">Delete</button>
   </div>
 </template>

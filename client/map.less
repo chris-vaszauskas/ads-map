@@ -4,6 +4,33 @@ html, body {
   height: 100%;
 }
 
+.dropping {
+  cursor: crosshair;
+
+  .dropMarker {
+    // TODO fancy colors?
+
+    &:after {
+      content: "Click the map to drop a pin or click here to cancel";
+    }
+  }
+}
+
+.dropMarker {
+  text-align: center;
+  padding: 24px;
+  margin-top: 40px;
+
+  // TODO transparent colors
+  border: 8px dashed lightGray;
+  color: gray;
+  background: #eee;
+
+  &:after {
+    content: "Click here to drop a pin";
+  }
+}
+
 #sidebar {
   width: @sidebar-width;
   height: 100%;
@@ -25,10 +52,9 @@ html, body {
   height: 100%;
   position: absolute;
   right: 0;
-  //left: @sidebar-width;
-  left: 0;  // todo remove
-  z-index: 5;  // todo remove
+  left: @sidebar-width;
 
+  // hack to make Google Maps work with Bootstrap
   img {
     max-width: none;
   }
