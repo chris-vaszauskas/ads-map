@@ -26,7 +26,7 @@ Meteor.startup(function () {
   });
 
   body.on("click", ".btn-delete", function () {
-    if (confirm("Are you sure you want to delete this location?")) {
+    if (confirm("Are you sure you want to delete this marker?")) {
 
     }
   });
