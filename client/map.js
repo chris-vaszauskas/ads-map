@@ -1,8 +1,11 @@
 // TODO use meteor events instead of jquery
+// TODO refactor name validation
 
 Locations = new Meteor.Collection("locations");
 
-var map;
+var map_;     // the google map on the page
+var marker_;  // the google maps marker that is currently focused
+var info_;    // the google maps info window that is currently focused
 
 Meteor.startup(function () {
   var body = $(document.body);
@@ -35,14 +38,14 @@ Meteor.startup(function () {
   initializeMap();
   Locations.find().forEach(function (location) {
     var position = new google.maps.LatLng(location.lat, location.lng);
-    addMarkerToMap(map, position, location);
+    addMarkerToMap(position, location);
   });
 
   Locations.find().observeChanges({
     added: function (id, location) {
       var position = new google.maps.LatLng(location.lat, location.lng);
-      if (! window.marker || ! window.marker.getPosition().equals(position)) {
-        addMarkerToMap(map, position, location);
+      if (! marker_ || ! marker_.getPosition().equals(position)) {
+        addMarkerToMap(position, location);
       }
     },
 
@@ -53,37 +56,45 @@ Meteor.startup(function () {
   });
 });
 
-function addMarkerToMap(map, position, data) {
-  // Create the marker
+// Adds a marker to the map at @position. If @content is set, attaches
+// an info window to the marker with its content set to @content
+function addMarkerToMap(position, content) {
+  // Create the marker and attach an
   var marker = new google.maps.Marker({
     position: position,
-    map: map,
+    map: map_,
     title: location.name,
     animation: google.maps.Animation.DROP
   });
+  if (content) {
+    attachInfoWindowToMarker(marker, content);
+  }
+  return marker;
+}
 
-  // Create an info window to be displayed when the marker is clicked
+// When @marker is clicked, displays an info window with @content
+function attachInfoWindowToMarker(marker, content) {
   var info = new google.maps.InfoWindow({
-    content: Template.showPosition(data)
+    content: Template.showPosition(content)
   });
   google.maps.event.addListener(marker, "click", function () {
-    info.open(map, marker);
+    info.open(map_, marker);
   });
-
-  return marker;
 }
 
 function submitName(infoSelector) {
   var name = $.trim(infoSelector.find(".name").val());
   if (name.length > 0) {
-    var position = window.marker.getPosition();
+    var position = marker_.getPosition();
     Locations.insert({
       lat: position.lat(),
       lng: position.lng(),
       name: name
     });
-    window.info.close();
+    info_.close();
   }
+
+  attachInfoWindowToMarker(marker_, name);
 }
 
 function initializeMap() {
@@ -92,7 +103,7 @@ function initializeMap() {
     zoom: 18,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
-  map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  map_ = new google.maps.Map(document.getElementById("map"), mapOptions);
 }
 
 // Sets all UI elements according to whether a pin is about to
@@ -100,12 +111,12 @@ function initializeMap() {
 function setDroppingPin(dropping) {
   if (dropping) {
     $(document.body).addClass("dropping");
-    map.setOptions({
+    map_.setOptions({
       draggable: false
     });
   } else {
     $(document.body).removeClass("dropping");
-    map.setOptions({
+    map_.setOptions({
       draggable: true
     });
   }
@@ -117,31 +128,31 @@ Template.dropMarker.events({
     setDroppingPin(dropping);
     if (dropping) {
       // When the map is clicked, drop a new marker
-      google.maps.event.addListenerOnce(map, "click", function (event) {
+      google.maps.event.addListenerOnce(map_, "click", function (event) {
         setDroppingPin(false);
 
         // Remove the marker that is currently being editied (if it exists)
-        if (window.marker) {
-          window.marker.setMap(null);
+        if (marker_) {
+          marker_.setMap(null);
         }
 
         // Create a marker on the map
-        window.marker = new google.maps.Marker({
+        marker_ = new google.maps.Marker({
           position: event.latLng,
-          map: map,
+          map: map_,
           animation: google.maps.Animation.DROP
         });
 
         // Display an info window above the marker
-        window.info = new google.maps.InfoWindow({
+        info_ = new google.maps.InfoWindow({
           content: Template.addPosition()
         });
-        window.info.open(map, window.marker);
+        info_.open(map_, marker_);
 
         // If the window is closed with the close button, remove
         // the marker from the map
-        google.maps.event.addListener(window.info, "closeclick", function () {
-          window.marker.setMap(null);
+        google.maps.event.addListener(info_, "closeclick", function () {
+          marker_.setMap(null);
         });
       });
     }
