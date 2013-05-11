@@ -1,11 +1,13 @@
 // TODO use meteor events instead of jquery
 // TODO refactor name validation
+// TODO remove autopublish and insecure packages
 
 Locations = new Meteor.Collection("locations");
 
-var map_;     // the google map on the page
-var marker_;  // the google maps marker that is currently focused
-var info_;    // the google maps info window that is currently focused
+var map_;          // the google map on the page
+var marker_;       // the google maps marker that is currently focused
+var info_;         // the google maps info window that is currently focused
+var markers_ = []; // the markers currently being displayed on the map
 
 Meteor.startup(function () {
   var body = $(document.body);
@@ -34,13 +36,15 @@ Meteor.startup(function () {
     $(this).closest(".info").find(".btn").toggleClass("disabled", ! enabled);
   });
 
-  // Initialize the map and add any initial markers to it
+  // Initialize the map and add initial markers to it
   initializeMap();
   Locations.find().forEach(function (location) {
     var position = new google.maps.LatLng(location.lat, location.lng);
     addMarkerToMap(position, location);
   });
 
+  // Observe changes to the array of locations on the server, adding and removing
+  // markers as necessary
   Locations.find().observeChanges({
     added: function (id, location) {
       var position = new google.maps.LatLng(location.lat, location.lng);
@@ -52,23 +56,26 @@ Meteor.startup(function () {
     removed: function (id) {
       // TODO
     }
-
   });
 });
 
 // Adds a marker to the map at @position. If @content is set, attaches
 // an info window to the marker with its content set to @content
 function addMarkerToMap(position, content) {
-  // Create the marker and attach an
+  // Create the marker
   var marker = new google.maps.Marker({
     position: position,
     map: map_,
     title: location.name,
     animation: google.maps.Animation.DROP
   });
+
+  // Attach an info window to the marker
   if (content) {
     attachInfoWindowToMarker(marker, content);
   }
+
+  markers_.push(marker);
   return marker;
 }
 
@@ -95,6 +102,7 @@ function submitName(infoSelector) {
   }
 
   attachInfoWindowToMarker(marker_, name);
+  markers_.push(marker);
 }
 
 function initializeMap() {
