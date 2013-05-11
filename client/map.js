@@ -1,6 +1,6 @@
 // TODO use meteor events instead of jquery
-// TODO refactor name validation
 // TODO remove autopublish package
+// TODO google analytics
 
 Locations = new Meteor.Collection("locations");
 
@@ -15,11 +15,13 @@ Meteor.startup(function () {
   // Submit the name when the submit button is pressed or the
   // user hits enter inside the text box on the info form
   body.on("click", ".info .btn", function () {
-    submitName($(this).parent());
+    var name = $(this).val();
+    submitName(name);
   });
   body.on("keydown", ".info .name", function (event) {
     if (event.keyCode === 13) {
-      submitName($(this).parent());
+      var name = $(this).val();
+      submitName(name);
     }
   });
 
@@ -32,7 +34,8 @@ Meteor.startup(function () {
   // Toggle the submit button's enabled-ness as the value in the
   // text box changes
   body.on("input", ".info .name", function () {
-    var enabled = $.trim($(this).val()).length > 0;
+    var name = $(this).val();
+    var enabled = Boolean(validateName(name));
     $(this).closest(".info").find(".btn").toggleClass("disabled", ! enabled);
   });
 
@@ -58,6 +61,16 @@ Meteor.startup(function () {
     }
   });
 });
+
+// Ensures a name is valid. Returns the valid name or false if a
+// name is invalid
+function validateName(name) {
+  name = $.trim(name);
+  if (name.length > 0) {
+    return name;
+  }
+  return false;
+}
 
 // Adds a marker to the map at @position. If @content is set, attaches
 // an info window to the marker with its content set to @content
@@ -89,9 +102,11 @@ function attachInfoWindowToMarker(marker, content) {
   });
 }
 
-function submitName(infoSelector) {
-  var name = $.trim(infoSelector.find(".name").val());
-  if (name.length > 0) {
+// Inserts a new record into the database using the focused
+// marker as the location and @name as the name
+function submitName(name) {
+  name = validateName(name);
+  if (name) {
     var position = marker_.getPosition();
     Locations.insert({
       lat: position.lat(),
@@ -99,10 +114,10 @@ function submitName(infoSelector) {
       name: name
     });
     info_.close();
-  }
 
-  attachInfoWindowToMarker(marker_, name);
-  markers_.push(marker);
+    attachInfoWindowToMarker(marker_, name);
+    markers_.push(marker);
+  }
 }
 
 function initializeMap() {
@@ -117,24 +132,19 @@ function initializeMap() {
 // Sets all UI elements according to whether a pin is about to
 // be dropped
 function setDroppingPin(dropping) {
-  if (dropping) {
-    $(document.body).addClass("dropping");
-    map_.setOptions({
-      draggable: false
-    });
-  } else {
-    $(document.body).removeClass("dropping");
-    map_.setOptions({
-      draggable: true
-    });
-  }
+  $(document.body).toggleClass("dropping", dropping);
+  map_.setOptions({
+    draggable: ! dropping
+  });
 }
 
 var mapClickListener;
 Template.dropMarker.events({
+
   "click": function (event) {
     var dropping = ! $(document.body).hasClass("dropping");
     setDroppingPin(dropping);
+
     if (dropping) {
       // When the map is clicked, drop a new marker
       mapClickListener = google.maps.event.addListenerOnce(map_, "click", function (event) {
@@ -168,4 +178,5 @@ Template.dropMarker.events({
       google.maps.event.removeListener(mapClickListener);
     }
   }
+
 });
