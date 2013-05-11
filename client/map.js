@@ -1,6 +1,6 @@
 // TODO use meteor events instead of jquery
 // TODO refactor name validation
-// TODO remove autopublish and insecure packages
+// TODO remove autopublish package
 
 Locations = new Meteor.Collection("locations");
 
