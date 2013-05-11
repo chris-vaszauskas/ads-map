@@ -60,44 +60,6 @@ html, body {
 
   .quote-author {
     margin-bottom: 0;
-    text-align: right;
-    font-style: italic;
-    color: gray;
-  }
-
-  .quote {
-    @quote-background: #e8e8e8;
-    @quote-indicator-width: 8px;
-
-    background: @quote-background;
-    position: relative;
-    padding: 8px;
-    border: 1px solid black;
-
-    &:before {
-      content: "";
-      position: absolute;
-      right: 20px;
-      bottom: @quote-indicator-width * -2;
-      width: 0;
-      height: 0;
-      border-color: @quote-background transparent transparent transparent;
-      border-style: solid;
-      border-width: @quote-indicator-width;
-      z-index: 2;
-    }
-
-    &:after {
-      content: "";
-      position: absolute;
-      right: 19px;
-      bottom: (@quote-indicator-width + 1) * -2;
-      width: 0;
-      height: 0;
-      border-color: black transparent transparent transparent;
-      border-style: solid;
-      border-width: @quote-indicator-width + 1;
-    }
   }
 }
 
@@ -122,3 +84,46 @@ html, body {
     margin-bottom: 0;
   }
 }
+
+.quote-author {
+  text-align: right;
+  font-style: italic;
+  color: gray;
+}
+
+/* fancy indicator around quote
+.quote {
+  @quote-background: #e8e8e8;
+  @quote-indicator-width: 8px;
+
+  position: relative;
+
+  background: @quote-background;
+  padding: 8px;
+  border: 1px solid black;
+  &:before {
+    content: "";
+    position: absolute;
+    right: 20px;
+    bottom: @quote-indicator-width * -2;
+    width: 0;
+    height: 0;
+    border-color: @quote-background transparent transparent transparent;
+    border-style: solid;
+    border-width: @quote-indicator-width;
+    z-index: 2;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    right: 19px;
+    bottom: (@quote-indicator-width + 1) * -2;
+    width: 0;
+    height: 0;
+    border-color: black transparent transparent transparent;
+    border-style: solid;
+    border-width: @quote-indicator-width + 1;
+  }
+}
+*/
