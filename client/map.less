@@ -9,7 +9,9 @@ html, body {
   cursor: crosshair;
 
   .dropMarker {
-    // TODO fancy colors?
+    color: rgb(70, 136, 71);
+    background-color: rgba(70, 136, 71, 0.25);
+    border-color: rgb(70, 136, 71);
 
     &:after {
       content: "Click the map to drop a pin or click here to cancel";
@@ -55,6 +57,13 @@ html, body {
   bottom: @sidebar-padding;
   right: @sidebar-padding;
   left: @sidebar-padding;
+
+  .quote-author {
+    margin-bottom: 0;
+    text-align: right;
+    font-style: italic;
+    color: gray;
+  }
 }
 
 .sidebar {
