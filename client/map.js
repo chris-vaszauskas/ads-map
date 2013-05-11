@@ -122,13 +122,14 @@ function setDroppingPin(dropping) {
   }
 }
 
+var mapClickListener;
 Template.dropMarker.events({
   "click": function (event) {
     var dropping = ! $(document.body).hasClass("dropping");
     setDroppingPin(dropping);
     if (dropping) {
       // When the map is clicked, drop a new marker
-      google.maps.event.addListenerOnce(map_, "click", function (event) {
+      mapClickListener = google.maps.event.addListenerOnce(map_, "click", function (event) {
         setDroppingPin(false);
 
         // Remove the marker that is currently being editied (if it exists)
@@ -155,6 +156,8 @@ Template.dropMarker.events({
           marker_.setMap(null);
         });
       });
+    } else {
+      google.maps.event.removeListener(mapClickListener);
     }
   }
 });
