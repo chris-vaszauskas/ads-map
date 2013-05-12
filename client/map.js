@@ -30,7 +30,7 @@ Meteor.startup(function () {
   body.on("click", ".btn-delete", function () {
     if (confirm("Are you sure you want to delete this marker?")) {
       var id = $(this).data("id");
-      Locations.remove(id);
+      Locations.update(id, { $set: { deleted: true } });
     }
   });
 
@@ -42,17 +42,11 @@ Meteor.startup(function () {
     $(this).closest(".info").find(".btn").toggleClass("disabled", ! enabled);
   });
 
-  // Initialize the map and add initial markers to it
   initializeMap();
-  // TODO remove me?
-  Locations.find().forEach(function (location) {
-    var position = new google.maps.LatLng(location.lat, location.lng);
-    var marker = addMarkerToMap(position, location);
-  });
 
   // Observe changes to the array of locations on the server, adding and removing
   // markers as necessary
-  Locations.find().observeChanges({
+  Locations.find({ deleted: false }).observeChanges({
     added: function (id, location) {
       var position = new google.maps.LatLng(location.lat, location.lng);
       if (! marker_ || ! marker_.getPosition().equals(position)) {
@@ -122,7 +116,8 @@ function submitName(name) {
     var id = Locations.insert({
       lat: position.lat(),
       lng: position.lng(),
-      name: name
+      name: name,
+      deleted: false
     });
 
     attachInfoWindowToMarker(marker_, { id: id, name: name });
