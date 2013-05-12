@@ -15,13 +15,15 @@ Meteor.startup(function () {
   // Submit the name when the submit button is pressed or the
   // user hits enter inside the text box on the info form
   body.on("click", ".info .btn", function () {
-    var name = $(this).val();
+    var name = $(this).siblings(".name").val();
     submitName(name);
+    info_.close();
   });
   body.on("keydown", ".info .name", function (event) {
     if (event.keyCode === 13) {
       var name = $(this).val();
       submitName(name);
+      info_.close();
     }
   });
 
@@ -113,10 +115,9 @@ function submitName(name) {
       lng: position.lng(),
       name: name
     });
-    info_.close();
 
-    attachInfoWindowToMarker(marker_, name);
-    markers_.push(marker);
+    attachInfoWindowToMarker(marker_, { name: name });
+    markers_.push(marker_);
   }
 }
 
