@@ -7,7 +7,7 @@ Locations = new Meteor.Collection("locations");
 var map_;          // the google map on the page
 var marker_;       // the google maps marker that is currently focused
 var info_;         // the google maps info window that is currently focused
-var markers_ = []; // the markers currently being displayed on the map
+var markers_ = {}; // map from document ID to marker on the map
 
 Meteor.startup(function () {
   var body = $(document.body);
@@ -29,7 +29,8 @@ Meteor.startup(function () {
 
   body.on("click", ".btn-delete", function () {
     if (confirm("Are you sure you want to delete this marker?")) {
-
+      var id = $(this).data("id");
+      Locations.remove(id);
     }
   });
 
@@ -43,9 +44,10 @@ Meteor.startup(function () {
 
   // Initialize the map and add initial markers to it
   initializeMap();
+  // TODO remove me?
   Locations.find().forEach(function (location) {
     var position = new google.maps.LatLng(location.lat, location.lng);
-    addMarkerToMap(position, location);
+    var marker = addMarkerToMap(position, location);
   });
 
   // Observe changes to the array of locations on the server, adding and removing
@@ -54,12 +56,23 @@ Meteor.startup(function () {
     added: function (id, location) {
       var position = new google.maps.LatLng(location.lat, location.lng);
       if (! marker_ || ! marker_.getPosition().equals(position)) {
-        addMarkerToMap(position, location);
+        // Create the marker
+        var marker = addMarkerToMap(position);
+        markers_[id] = marker;
+
+        // Attach an info window to the marker, mapping the info window to
+        // the location ID
+        location.id = id;
+        attachInfoWindowToMarker(marker, location);
       }
     },
 
     removed: function (id) {
-      // TODO
+      var marker = markers_[id];
+      if (marker) {
+        marker.setMap(null);
+        delete markers_[id];
+      }
     }
   });
 });
@@ -74,27 +87,22 @@ function validateName(name) {
   return false;
 }
 
-// Adds a marker to the map at @position. If @content is set, attaches
-// an info window to the marker with its content set to @content
-function addMarkerToMap(position, content) {
-  // Create the marker
+// Adds a marker to the map at @position. Returns the new marker
+function addMarkerToMap(position) {
   var marker = new google.maps.Marker({
     position: position,
     map: map_,
     title: location.name,
     animation: google.maps.Animation.DROP
   });
-
-  // Attach an info window to the marker
-  if (content) {
-    attachInfoWindowToMarker(marker, content);
-  }
-
-  markers_.push(marker);
   return marker;
 }
 
-// When @marker is clicked, displays an info window with @content
+// When @marker is clicked, displays an info window with @content.
+// @content should be an object with name and id properties, set to
+// the name that will be displayed in the window and the location ID
+// in the database the window corresponds to.
+// Returns the new info window
 function attachInfoWindowToMarker(marker, content) {
   var info = new google.maps.InfoWindow({
     content: Template.showPosition(content)
@@ -102,6 +110,7 @@ function attachInfoWindowToMarker(marker, content) {
   google.maps.event.addListener(marker, "click", function () {
     info.open(map_, marker);
   });
+  return info;
 }
 
 // Inserts a new record into the database using the focused
@@ -110,14 +119,15 @@ function submitName(name) {
   name = validateName(name);
   if (name) {
     var position = marker_.getPosition();
-    Locations.insert({
+    var id = Locations.insert({
       lat: position.lat(),
       lng: position.lng(),
       name: name
     });
 
-    attachInfoWindowToMarker(marker_, { name: name });
-    markers_.push(marker_);
+    attachInfoWindowToMarker(marker_, { id: id, name: name });
+    markers_[id] = marker_;
+    marker_ = null;
   }
 }
 
