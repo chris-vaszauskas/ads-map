@@ -1,6 +1,4 @@
 // TODO use meteor events instead of jquery
-// TODO remove autopublish package
-// TODO google analytics
 
 Locations = new Meteor.Collection("locations");
 Meteor.subscribe("locations");
