@@ -71,8 +71,12 @@ Meteor.startup(function () {
   });
 });
 
-// Ensures a name is valid. Returns the valid name or false if a
-// name is invalid
+/**
+ * Ensures a name is valid.
+ *
+ * @param  {string} name name to validate
+ * @return the valid name, or false if the name is invalid
+ */
 function validateName(name) {
   name = $.trim(name);
   if (name.length > 0) {
@@ -81,22 +85,30 @@ function validateName(name) {
   return false;
 }
 
-// Adds a marker to the map at @position. Returns the new marker
+/**
+ * Adds a marker to the map at a given position.
+ *
+ * @param {google.maps.LatLng} position position to place the marker
+ * @returns {google.maps.Marker} the new marker
+ */
 function addMarkerToMap(position) {
   var marker = new google.maps.Marker({
     position: position,
     map: map_,
-    title: location.name,
     animation: google.maps.Animation.DROP
   });
   return marker;
 }
 
-// When @marker is clicked, displays an info window with @content.
-// @content should be an object with name and id properties, set to
-// the name that will be displayed in the window and the location ID
-// in the database the window corresponds to.
-// Returns the new info window
+/**
+ * Displays an info window when a marker is clicked.
+ *
+ * @param {google.maps.Marker} marker   marker to attach the window to
+ * @param {Object}             content  content object for the info window. Needs a
+ *                                      name field and an id field
+ *
+ * @return {google.maps.InfoWindow}  the new info window
+ */
 function attachInfoWindowToMarker(marker, content) {
   var info = new google.maps.InfoWindow({
     content: Template.showPosition(content)
@@ -107,11 +119,16 @@ function attachInfoWindowToMarker(marker, content) {
   return info;
 }
 
-// Inserts a new record into the database using the focused
-// marker as the location and @name as the name
+/**
+ * Inserts a new record into the database using the focused marker
+ * as the location and the given name.
+ *
+ * @param  {string} name name to store in the database
+ */
 function submitName(name) {
   name = validateName(name);
   if (name) {
+    // Insert the record into the database
     var position = marker_.getPosition();
     var id = Locations.insert({
       lat: position.lat(),
@@ -119,8 +136,9 @@ function submitName(name) {
       name: name,
       deleted: false
     });
-
     attachInfoWindowToMarker(marker_, { id: id, name: name });
+
+    // Map the database ID to the marker
     markers_[id] = marker_;
     marker_ = null;
   }
@@ -135,8 +153,11 @@ function initializeMap() {
   map_ = new google.maps.Map(document.getElementById("map"), mapOptions);
 }
 
-// Sets all UI elements according to whether a pin is about to
-// be dropped
+/**
+ * Sets all UI elements according to dropping mode.
+ *
+ * @param {Boolean} dropping  dropping mode
+ */
 function setDroppingPin(dropping) {
   $(document.body).toggleClass("dropping", dropping);
   map_.setOptions({
@@ -162,11 +183,7 @@ Template.dropMarker.events({
         }
 
         // Create a marker on the map
-        marker_ = new google.maps.Marker({
-          position: event.latLng,
-          map: map_,
-          animation: google.maps.Animation.DROP
-        });
+        marker_ = addMarkerToMap(event.latLng);
 
         // Display an info window above the marker
         info_ = new google.maps.InfoWindow({
