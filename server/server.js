@@ -1,7 +1,10 @@
-// TODO keep all locations in the database, but only publish
-// the ones that haven't been deleted ("active" flag?)
-
 Locations = new Meteor.Collection("locations");
+
+Locations.allow({
+  insert: function () {
+    return true;
+  }
+});
 
 Meteor.publish("locations", function () {
   return Locations.find({ deleted: false });
