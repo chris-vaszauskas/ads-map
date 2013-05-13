@@ -3,7 +3,7 @@
 	[
 		{
 			"path": "/chris/dev/projects/meteor/ads-map",
-      "folder_exclude_patterns": [".meteor"],
+      "folder_exclude_patterns": [".meteor/local"],
       "file_exclude_patterns": ["*.sublime*"]
 		}
 	]
