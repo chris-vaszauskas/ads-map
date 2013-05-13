@@ -2,4 +2,4 @@
 
 Built for Antioch Discipleship School in Waco, TX.
 
-Built with [meteor](www.meteor.com).
+Built with [meteor](http://www.meteor.com).
