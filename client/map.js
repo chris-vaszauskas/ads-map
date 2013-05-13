@@ -11,7 +11,6 @@ var info_;         // the google maps info window that is currently focused
 var markers_ = {}; // map from document ID to marker on the map
 
 Meteor.startup(function () {
-
   var body = $(document.body);
 
   // Submit the name when the submit button is pressed or the
