@@ -3,6 +3,7 @@
 // TODO google analytics
 
 Locations = new Meteor.Collection("locations");
+Meteor.subscribe("locations");
 
 var map_;          // the google map on the page
 var marker_;       // the google maps marker that is currently focused
@@ -10,6 +11,7 @@ var info_;         // the google maps info window that is currently focused
 var markers_ = {}; // map from document ID to marker on the map
 
 Meteor.startup(function () {
+
   var body = $(document.body);
 
   // Submit the name when the submit button is pressed or the
@@ -46,7 +48,7 @@ Meteor.startup(function () {
 
   // Observe changes to the array of locations on the server, adding and removing
   // markers as necessary
-  Locations.find({ deleted: false }).observeChanges({
+  Locations.find().observeChanges({
     added: function (id, location) {
       var position = new google.maps.LatLng(location.lat, location.lng);
       if (! marker_ || ! marker_.getPosition().equals(position)) {
