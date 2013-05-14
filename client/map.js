@@ -42,6 +42,7 @@ Meteor.startup(function () {
   });
 
   initializeMap();
+  initializeSearch();
 
   // Observe changes to the array of locations on the server, adding and removing
   // markers as necessary
@@ -51,7 +52,10 @@ Meteor.startup(function () {
       if (! marker_ || ! marker_.getPosition().equals(position)) {
         // Create the marker
         var marker = addMarkerToMap(position);
-        markers_[id] = marker;
+        markers_[id] = {
+          marker: marker,
+          name: location.name
+        };
 
         // Attach an info window to the marker, mapping the info window to
         // the location ID
@@ -63,7 +67,7 @@ Meteor.startup(function () {
     removed: function (id) {
       var marker = markers_[id];
       if (marker) {
-        marker.setMap(null);
+        marker.marker.setMap(null);
         delete markers_[id];
       }
     }
@@ -138,7 +142,10 @@ function submitName(name) {
     attachInfoWindowToMarker(marker_, { id: id, name: name });
 
     // Map the database ID to the marker
-    markers_[id] = marker_;
+    markers_[id] = {
+      marker: marker_,
+      name: name
+    };
     marker_ = null;
   }
 }
@@ -150,6 +157,28 @@ function initializeMap() {
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
   map_ = new google.maps.Map(document.getElementById("map"), mapOptions);
+}
+
+function initializeSearch() {
+  // Hide all the markers that don't match the search string
+  $("#searchInput").on("input", function () {
+    var search = $(this).val().toLowerCase();
+    for (var id in markers_) {
+      var name = markers_[id].name.toLowerCase();
+      if (name.indexOf(search) === -1) {
+        if (markers_[id].marker.getMap() !== null) {
+          markers_[id].marker.setMap(null);
+        }
+      } else {
+        if (markers_[id].marker.getMap() !== map_) {
+          markers_[id].marker.setMap(map_);
+        }
+      }
+    }
+
+    $(document.body).toggleClass("searching", search.length > 0);
+    Session.set("search", search);
+  });
 }
 
 /**
@@ -201,4 +230,10 @@ Template.dropMarker.events({
     }
   }
 
+});
+
+Template.searching.helpers({
+  search: function () {
+    return Session.get("search");
+  }
 });

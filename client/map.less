@@ -22,7 +22,7 @@ html, body {
 .dropMarker {
   text-align: center;
   padding: 24px 20px;
-  margin-top: 40px;
+  margin-top: 20px;
 
   border: 8px dashed lightGray;
   color: gray;
@@ -92,6 +92,41 @@ html, body {
   text-align: right;
   font-style: italic;
   color: gray;
+}
+
+#search {
+  position: relative;
+  margin-top: 40px;
+
+  p {
+    margin-bottom: 0px;
+  }
+
+  input {
+    padding-left: 20px;
+
+  }
+
+  i {
+    position: absolute;
+    left: 4px;
+    top: 27px;
+  }
+}
+
+#searching {
+  position: absolute;
+  left: @sidebar-width;
+  right: 0;
+  background-color: rgb(56, 117, 218);
+  color: white;
+  padding: 8px;
+  display: none;
+  z-index: 5;
+}
+
+.searching #searching {
+  display: block;
 }
 
 /* fancy indicator around quote
