@@ -177,7 +177,7 @@ function initializeSearch() {
     }
 
     $(document.body).toggleClass("searching", search.length > 0);
-    Session.set("search", search);
+    Session.set("search", $(this).val());
   });
 }
 

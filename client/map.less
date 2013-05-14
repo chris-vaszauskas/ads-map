@@ -29,7 +29,7 @@ html, body {
   background: #eee;
 
   &:after {
-    content: "Click here to drop a marker";
+    content: "Where are you going? Click here to drop a marker";
   }
 }
 
@@ -49,17 +49,6 @@ html, body {
   box-sizing: border-box;
 
   z-index: 2;
-}
-
-#herber {
-  position: absolute;
-  bottom: @sidebar-padding;
-  right: @sidebar-padding;
-  left: @sidebar-padding;
-
-  .quote-author {
-    margin-bottom: 0;
-  }
 }
 
 .sidebar {
@@ -88,6 +77,10 @@ html, body {
   }
 }
 
+#herber {
+  margin-top: 20px;
+}
+
 .quote-author {
   text-align: right;
   font-style: italic;
@@ -95,8 +88,10 @@ html, body {
 }
 
 #search {
-  position: relative;
-  margin-top: 40px;
+  position: absolute;
+  bottom: @sidebar-padding;
+  right: @sidebar-padding;
+  left: @sidebar-padding;
 
   p {
     margin-bottom: 0px;
