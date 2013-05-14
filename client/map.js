@@ -152,8 +152,8 @@ function submitName(name) {
 
 function initializeMap() {
   var mapOptions = {
-    center: new google.maps.LatLng(31.548614, -97.149073),
-    zoom: 18,
+    center: new google.maps.LatLng(29.576633, 8.863575),
+    zoom: 2,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
   map_ = new google.maps.Map(document.getElementById("map"), mapOptions);
