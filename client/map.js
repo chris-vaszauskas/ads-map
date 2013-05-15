@@ -161,7 +161,7 @@ function initializeMap() {
 
 function initializeSearch() {
   // Hide all the markers that don't match the search string
-  $("#searchInput").on("input", function () {
+  $("#search-input").on("input", function () {
     var search = $(this).val().toLowerCase();
     for (var id in markers_) {
       var name = markers_[id].name.toLowerCase();
@@ -194,13 +194,14 @@ function setDroppingPin(dropping) {
 }
 
 var mapClickListener;
-Template.dropMarker.events({
-
-  "click": function (event) {
+Template.sidebar.events({
+  "click .drop-marker": function (event) {
     var dropping = ! $(document.body).hasClass("dropping");
     setDroppingPin(dropping);
 
-    if (dropping) {
+    if (! dropping) {
+      google.maps.event.removeListener(mapClickListener);
+    } else {
       // When the map is clicked, drop a new marker
       mapClickListener = google.maps.event.addListenerOnce(map_, "click", function (event) {
         setDroppingPin(false);
@@ -225,15 +226,19 @@ Template.dropMarker.events({
           marker_.setMap(null);
         });
       });
-    } else {
-      google.maps.event.removeListener(mapClickListener);
     }
   }
-
 });
 
-Template.searching.helpers({
-  search: function () {
+Template.searchExplanation.helpers({
+  searchText: function () {
     return Session.get("search");
+  }
+});
+
+Template.searchExplanation.events({
+  "click .icon-remove": function () {
+    $("#search-input").val("");
+    $("#search-input").trigger("input");
   }
 });

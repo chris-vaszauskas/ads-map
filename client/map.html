@@ -15,7 +15,7 @@
 <body>
   <div id="sidebar">{{> sidebar}}</div>
   <div id="map"></div>
-  {{> searching}}
+  {{> searchExplanation}}
 </body>
 
 <template name="sidebar">
@@ -26,22 +26,23 @@
     <p class="quote-author">~ Rob Herber</p>
   </div>
 
-  {{> dropMarker}}
+  <div class="drop-marker"></div>
 
   <div id="search">
-    <p>Search for someone</p>
-    <input class="input-block-level" type="text" placeholder="start typing to search" id="searchInput" />
-    <i class="icon-search"></i>
+    <span>Search for someone</span>
+    <div class="search-control">
+      <input class="input-block-level" type="text" placeholder="Start typing to search" id="search-input" />
+      <i class="icon-search"></i>
+    </div>
   </div>
 
 </template>
 
-<template name="dropMarker">
-  <div class="dropMarker"></div>
-</template>
-
-<template name="searching">
-  <div id="searching">Showing markers that match "{{search}}"</div>
+<template name="searchExplanation">
+  <div id="search-explanation">
+    Showing markers that match "{{searchText}}"
+    <i class="icon-remove icon-white" />
+  </div>
 </template>
 
 <template name="addPosition">

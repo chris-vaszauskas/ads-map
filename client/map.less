@@ -8,7 +8,7 @@ html, body {
 .dropping {
   cursor: crosshair;
 
-  .dropMarker {
+  .drop-marker {
     color: rgb(70, 136, 71);
     background-color: rgba(70, 136, 71, 0.25);
     border-color: rgb(70, 136, 71);
@@ -19,7 +19,7 @@ html, body {
   }
 }
 
-.dropMarker {
+.drop-marker {
   text-align: center;
   padding: 24px 20px;
   margin-top: 20px;
@@ -88,39 +88,39 @@ html, body {
 }
 
 #search {
-  position: absolute;
-  bottom: @sidebar-padding;
-  right: @sidebar-padding;
-  left: @sidebar-padding;
+  margin-top: 20px;
+}
 
-  p {
-    margin-bottom: 0px;
-  }
-
+.search-control {
+  position: relative;
   input {
     padding-left: 20px;
-
   }
-
   i {
     position: absolute;
     left: 4px;
-    top: 27px;
+    top: 7px;
   }
 }
 
-#searching {
+#search-explanation {
   position: absolute;
   left: @sidebar-width;
   right: 0;
   background-color: rgb(56, 117, 218);
   color: white;
-  padding: 8px;
+  padding: 8px 12px;
   display: none;
   z-index: 5;
+
+  i {
+    cursor: pointer;
+    float: right;
+    margin-top: 2px;
+  }
 }
 
-.searching #searching {
+.searching #search-explanation {
   display: block;
 }
 
